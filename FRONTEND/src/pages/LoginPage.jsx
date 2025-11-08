@@ -1,16 +1,27 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { authAPI } from '../services/api';
 import '../styles/Auth.css';
 
 function LoginPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login:', formData);
+    setError('');
+    
+    try {
+      const response = await authAPI.login(formData);
+      localStorage.setItem('token', response.data.token);
+      navigate('/'); // Redirect to home page after successful login
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to login. Please try again.');
+    }
   };
 
   const handleChange = (e) => {

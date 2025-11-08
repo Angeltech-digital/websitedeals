@@ -62,11 +62,6 @@ function Header({ cartCount, onCartClick }) {
           <ul className="nav-links">
             <li><Link to="/">Home</Link></li>
             <li><Link to="/products">All Products</Link></li>
-            <li><Link to="/categories/microphones">Microphones</Link></li>
-            <li><Link to="/categories/lighting">Ring Lights</Link></li>
-            <li><Link to="/categories/tripods">Tripods</Link></li>
-            <li><Link to="/categories/cables">Cables</Link></li>
-            <li><Link to="/categories/headphones">Headphones</Link></li>
             <li><Link to="/admin" className="admin-link">Admin</Link></li>
           </ul>
         </div>
