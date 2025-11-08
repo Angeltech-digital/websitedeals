@@ -1,0 +1,35 @@
+@import './variables.css';
+
+.page {
+  min-height: 100vh;
+  background: var(--bg-light);
+}
+
+.page-header {
+  background: linear-gradient(135deg, var(--primary-purple), var(--primary-orange));
+  padding: var(--spacing-2xl) 0;
+  color: white;
+  text-align: center;
+}
+
+.page-header h1 {
+  font-size: 42px;
+  font-weight: 800;
+  margin: 0 0 var(--spacing-sm);
+}
+
+.page-header p {
+  font-size: 18px;
+  margin: 0;
+  opacity: 0.95;
+}
+
+@media (max-width: 768px) {
+  .page-header h1 {
+    font-size: 32px;
+  }
+
+  .page-header p {
+    font-size: 16px;
+  }
+}
