@@ -11,6 +11,8 @@ from .serializers import (
     UserSerializer,
     AdminUserCreateSerializer,
 )
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from .permissions import IsAdmin, IsAdminOrReadOnly
 from products.models import Category
 from products.serializers import CategorySerializer
@@ -44,7 +46,9 @@ class UserProfileView(generics.RetrieveUpdateAPIView):
 
 
 class LogoutView(APIView):
-    permission_classes = [IsAuthenticated]
+    # AllowAny so clients can send a refresh token to blacklist it even if the access token
+    # is already removed/expired. We'll still attempt to blacklist the provided refresh.
+    permission_classes = [AllowAny]
 
     def post(self, request):
         try:
@@ -55,6 +59,29 @@ class LogoutView(APIView):
             return Response({'message': 'Successfully logged out'}, status=status.HTTP_200_OK)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
+# Custom Token serializer/view to allow login with either username or email
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(self, attrs):
+        # attrs usually contains 'username' and 'password'. Allow the user to pass email
+        username = attrs.get('username')
+        password = attrs.get('password')
+
+        # If the username looks like an email, try to resolve to a username
+        if username and '@' in username:
+            try:
+                user = User.objects.get(email=username)
+                attrs['username'] = user.username
+            except User.DoesNotExist:
+                # leave username as-is; authentication will fail below
+                pass
+
+        return super().validate(attrs)
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class UserManagementViewSet(viewsets.ModelViewSet):

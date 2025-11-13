@@ -23,9 +23,9 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import routers
 from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
     TokenRefreshView,
 )
+from accounts.views import CustomTokenObtainPairView
 from django.http import JsonResponse
 from accounts.views import UserManagementViewSet, UserProfileView
 from products.views import CategoryViewSet
@@ -54,8 +54,8 @@ router.register(r'api/categories', CategoryViewSet)
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('products.urls')),
-    path('api/auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/login/', TokenObtainPairView.as_view(), name='login'),
+    path('api/auth/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/login/', CustomTokenObtainPairView.as_view(), name='login'),
     path('api/auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/auth/', include('accounts.urls')),
     path('api/profile/', UserProfileView.as_view(), name='user-profile'),
