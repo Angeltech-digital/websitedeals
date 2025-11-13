@@ -6,6 +6,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework_simplejwt.tokens import BlacklistMixin
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError
 from .serializers import (
     RegisterSerializer,
     UserSerializer,
@@ -28,13 +29,38 @@ class RegisterView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        user = serializer.save()
-        refresh = RefreshToken.for_user(user)
-        return Response({
-            'user': serializer.data,
-            'access': str(refresh.access_token),
-            'refresh': str(refresh),
-        }, status=status.HTTP_201_CREATED)
+        
+        try:
+            user = serializer.save()
+            refresh = RefreshToken.for_user(user)
+            return Response({
+                'user': serializer.data,
+                'access': str(refresh.access_token),
+                'refresh': str(refresh),
+            }, status=status.HTTP_201_CREATED)
+        except IntegrityError as e:
+            # Handle unique constraint violations
+            error_message = str(e)
+            if 'username' in error_message:
+                return Response(
+                    {'username': 'This username is already taken.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            elif 'email' in error_message:
+                return Response(
+                    {'email': 'This email is already registered.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            else:
+                return Response(
+                    {'detail': 'An error occurred during registration. Please try again.'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        except Exception as e:
+            return Response(
+                {'detail': 'An unexpected error occurred. Please try again.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class UserProfileView(generics.RetrieveUpdateAPIView):

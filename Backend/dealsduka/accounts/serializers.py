@@ -14,8 +14,8 @@ class CategorySerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('id', 'username', 'email', 'role', 'phone_number', 'address', 'bio', 'profile_picture')
-        read_only_fields = ('role',)
+        fields = ('id', 'username', 'email', 'role', 'is_staff', 'is_superuser', 'phone_number', 'address', 'bio', 'profile_picture')
+        read_only_fields = ('role', 'is_staff', 'is_superuser')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -30,6 +30,23 @@ class RegisterSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if data['password'] != data['password_confirm']:
             raise serializers.ValidationError("Passwords do not match.")
+        
+        # Check for duplicate username
+        username = data.get('username')
+        email = data.get('email')
+        
+        if not username:
+            # Use email as username if not provided
+            username = email
+        
+        # Check if username already exists
+        if User.objects.filter(username=username).exists():
+            raise serializers.ValidationError({"username": "This username is already taken."})
+        
+        # Check if email already exists
+        if User.objects.filter(email=email).exists():
+            raise serializers.ValidationError({"email": "This email is already registered."})
+        
         return data
 
     def create(self, validated_data):
@@ -39,12 +56,14 @@ class RegisterSerializer(serializers.ModelSerializer):
         if not username:
             # Use email as username if not provided
             username = email
+        # Always create as regular user (CUSTOMER), never as admin
         user = User.objects.create_user(
             username=username,
             email=email,
             password=validated_data.get('password'),
             phone_number=validated_data.get('phone_number', ''),
-            address=validated_data.get('address', '')
+            address=validated_data.get('address', ''),
+            role='CUSTOMER'  # Force role to be CUSTOMER only
         )
         return user
 
