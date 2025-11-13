@@ -1,65 +1,61 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { authAPI, setTokens, setUser } from '../services/api';
+import { toast } from 'react-toastify';
+import { authAPI, setTokens, setUser, clearTokens } from '../services/api';
 import Header from '../components/Header';
 import '../styles/Auth.css';
 
 function LoginPage() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    usernameOrEmail: '',
+    email: '',
     password: ''
   });
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [serverErrors, setServerErrors] = useState(null);
 
   const handleSubmit = async (e) => {
-    // allow calling via both form submit and button onClick; prevent duplicate submissions
     if (isLoading) return;
     if (e && e.preventDefault) e.preventDefault();
     setError('');
     setIsLoading(true);
 
     try {
-      // Backend TokenObtainPairView expects { username, password }
-      // If the user provided an email, include it as `email` too (some backends accept either).
+      // Login with email - backend will convert to username
       const payload = {
-        username: formData.usernameOrEmail,
+        username: formData.email,  // Send email as username
         password: formData.password,
       };
-      if (formData.usernameOrEmail.includes('@')) {
-        payload.email = formData.usernameOrEmail;
-      }
 
-      // Debug: log the payload being sent to the API
       console.debug('Login payload:', payload);
 
       const response = await authAPI.login(payload);
-
-      // TokenObtainPairView returns { access, refresh }
       const { access, refresh } = response.data;
       setTokens({ access, refresh });
-      // fetch user profile and persist it for UI state
+
       try {
         const profileRes = await authAPI.getProfile();
-        setUser(profileRes.data);
-        if (profileRes.data?.role === 'ADMIN') {
+        const userData = profileRes.data;
+        
+        setUser(userData);
+        toast.success('Login successful!');
+        
+        // Admin goes to admin dashboard, others go to home
+        if (userData?.is_staff || userData?.role === 'ADMIN') {
           navigate('/admin');
         } else {
           navigate('/');
         }
       } catch (e) {
-        // if profile cannot be fetched, just redirect to home
+        // if profile cannot be fetched, redirect to home
+        toast.success('Login successful!');
         navigate('/');
       }
     } catch (err) {
-      // Log the entire server response for debugging
       console.error('Login error response:', err.response?.data || err);
-      // Show detailed backend errors when available
-      const message = err.response?.data?.detail || err.response?.data || err.message;
-      setError(typeof message === 'string' ? message : JSON.stringify(message));
-      setServerErrors(err.response?.data || null);
+      const message = err.response?.data?.detail || 'Invalid email or password';
+      setError(message);
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }
@@ -81,17 +77,19 @@ function LoginPage() {
             <h1 className="auth-title">Welcome Back</h1>
             <p className="auth-subtitle">Sign in to your account</p>
 
+            {error && <div className="auth-error">{error}</div>}
+
             <form onSubmit={handleSubmit} className="auth-form">
               <div className="form-group">
-                <label htmlFor="usernameOrEmail">Email or Username</label>
+                <label htmlFor="email">Email Address</label>
                 <input
-                  type="text"
-                  id="usernameOrEmail"
-                  name="usernameOrEmail"
-                  value={formData.usernameOrEmail}
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
                   onChange={handleChange}
                   required
-                  placeholder="you@example.com or username"
+                  placeholder="Enter your email"
                 />
               </div>
 
@@ -108,24 +106,9 @@ function LoginPage() {
                 />
               </div>
 
-              <div className="form-footer">
-                <label className="checkbox-label">
-                  <input type="checkbox" />
-                  <span>Remember me</span>
-                </label>
-                <Link to="/forgot-password" className="link">Forgot password?</Link>
-              </div>
-
-              {error && (
-                <div className="auth-error" role="alert">
-                  {error}
-                </div>
-              )}
-
               <button
                 type="submit"
                 className="submit-btn"
-                onClick={handleSubmit}
                 disabled={isLoading}
               >
                 {isLoading ? 'Signing in...' : 'Sign In'}

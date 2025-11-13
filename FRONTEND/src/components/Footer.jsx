@@ -65,7 +65,6 @@ function Footer() {
               <li><Link to="/register">Register</Link></li>
               <li><Link to="/account">My Account</Link></li>
               <li><Link to="/orders">Order History</Link></li>
-              <li><Link to="/admin">Admin Portal</Link></li>
             </ul>
           </div>
 

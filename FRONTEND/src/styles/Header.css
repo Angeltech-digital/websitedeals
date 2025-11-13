@@ -1,16 +1,18 @@
 @import './variables.css';
 
+/* ===== HEADER STRUCTURE ===== */
 .header {
   background: var(--bg-white);
-  box-shadow: var(--shadow-md);
   position: sticky;
   top: 0;
   z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+/* Main Header Top Section */
 .header-top {
+  padding: 12px 0;
   border-bottom: 1px solid var(--border-color);
-  padding: var(--spacing-md) 0;
 }
 
 .container {
@@ -22,119 +24,287 @@
 .header-content {
   display: flex;
   align-items: center;
-  gap: var(--spacing-lg);
+  gap: 16px;
   justify-content: space-between;
 }
 
+/* ===== LOGO ===== */
 .logo {
-  font-size: 28px;
-  font-weight: 700;
-  text-decoration: none;
   display: flex;
+  align-items: center;
   white-space: nowrap;
+  flex-shrink: 0;
+  text-decoration: none;
+  transition: transform 0.3s ease;
+  transform-origin: left center;
 }
 
-.logo-deals {
-  color: var(--primary-purple);
+.logo:hover {
+  transform: scale(1.05);
 }
 
-.logo-duka {
-  color: var(--primary-orange);
+.logo-image {
+  height: 45px;
+  width: auto;
+  object-fit: contain;
+  display: block;
 }
 
+/* ===== SEARCH BAR ===== */
 .search-bar {
   flex: 1;
-  max-width: 600px;
+  min-width: 200px;
   display: flex;
   position: relative;
+  max-width: 500px;
+  height: 40px;
 }
 
 .search-bar input {
   flex: 1;
-  padding: 12px 48px 12px 16px;
-  border: 2px solid var(--border-color);
-  border-radius: var(--border-radius);
-  font-size: 14px;
-  transition: var(--transition);
+  padding: 10px 48px 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 13px;
+  background: #f5f5f5;
+  transition: all 0.3s ease;
+  font-family: inherit;
+  height: 100%;
 }
 
 .search-bar input:focus {
   outline: none;
-  border-color: var(--primary-purple);
+  border-color: var(--primary-orange);
+  background: white;
+  box-shadow: 0 0 0 2px rgba(255, 153, 0, 0.1);
+}
+
+.search-bar input::placeholder {
+  color: #999;
 }
 
 .search-bar button {
   position: absolute;
-  right: 8px;
+  right: 10px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: var(--text-medium);
+  color: #666;
   cursor: pointer;
-  padding: 8px;
+  padding: 6px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: var(--transition);
+  transition: color 0.3s ease;
 }
 
 .search-bar button:hover {
-  color: var(--primary-purple);
+  color: var(--primary-orange);
 }
 
+/* ===== HEADER ACTIONS ===== */
 .header-actions {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: 16px;
+  flex-shrink: 0;
 }
 
-.header-link {
-  color: var(--text-dark);
+/* Account Section */
+.account-section {
+  display: flex;
+  align-items: center;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn-login {
+  padding: 8px 16px;
+  background: none;
+  border: 2px solid var(--primary-orange);
+  color: var(--primary-orange);
+  border-radius: 6px;
   text-decoration: none;
-  font-weight: 500;
-  transition: var(--transition);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
   white-space: nowrap;
 }
 
-.header-link:hover {
-  color: var(--primary-purple);
+.btn-login:hover {
+  background: var(--primary-orange);
+  color: white;
 }
 
+.btn-signup {
+  padding: 8px 16px;
+  background: var(--primary-orange);
+  border: 2px solid var(--primary-orange);
+  color: white;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.btn-signup:hover {
+  background: #e68a00;
+  border-color: #e68a00;
+}
+
+/* User Menu */
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-dark);
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-size: 13px;
+}
+
+.user-button:hover {
+  background: #f5f5f5;
+  color: var(--primary-orange);
+}
+
+.user-button svg {
+  width: 20px;
+  height: 20px;
+  color: var(--primary-orange);
+}
+
+.btn-logout {
+  padding: 6px 12px;
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  color: var(--text-dark);
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn-logout:hover {
+  background: #ff6b6b;
+  color: white;
+  border-color: #ff6b6b;
+}
+
+/* ===== CART BUTTON ===== */
 .cart-button {
   position: relative;
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text-dark);
-  padding: 8px;
+  padding: 0;
   display: flex;
   align-items: center;
-  transition: var(--transition);
+  justify-content: center;
+  transition: transform 0.3s ease;
 }
 
 .cart-button:hover {
+  transform: scale(1.1);
+}
+
+.cart-icon-container {
+  position: relative;
+  width: 50px;
+  height: 50px;
+  background: linear-gradient(135deg, #fff9e6 0%, #fff5cc 100%);
+  border: 2px solid var(--primary-orange);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(255, 153, 0, 0.15),
+              inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.cart-icon-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+  border-radius: 8px 8px 0 0;
+}
+
+.cart-icon-container::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  border: 1px solid rgba(255, 153, 0, 0.2);
+  border-radius: 6px;
+  pointer-events: none;
+}
+
+.cart-button:hover .cart-icon-container {
+  background: linear-gradient(135deg, #fff5cc 0%, #ffec99 100%);
+  box-shadow: 0 6px 16px rgba(255, 153, 0, 0.25),
+              inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  transform: translateY(-2px);
+}
+
+.cart-icon {
+  width: 24px;
+  height: 24px;
   color: var(--primary-orange);
+  position: relative;
+  z-index: 2;
 }
 
 .cart-badge {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: -8px;
+  right: -8px;
   background: var(--primary-orange);
   color: white;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  padding: 2px 6px;
+  padding: 3px 7px;
   border-radius: 10px;
-  min-width: 18px;
+  min-width: 20px;
   text-align: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  border: 2px solid white;
+  z-index: 3;
 }
 
+/* ===== MOBILE MENU TOGGLE ===== */
 .mobile-menu-toggle {
   display: none;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   background: none;
   border: none;
   cursor: pointer;
@@ -143,13 +313,16 @@
 
 .mobile-menu-toggle span {
   width: 24px;
-  height: 2px;
+  height: 2.5px;
   background: var(--text-dark);
-  transition: var(--transition);
+  transition: all 0.3s ease;
+  border-radius: 2px;
 }
 
+/* ===== NAVIGATION ===== */
 .nav {
   background: var(--bg-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .nav-links {
@@ -157,118 +330,178 @@
   margin: 0;
   padding: 0;
   display: flex;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md) 0;
+  gap: 4px;
+  padding: 12px 0;
+}
+
+.nav-links li {
+  display: flex;
 }
 
 .nav-links li a {
   color: var(--text-dark);
   text-decoration: none;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius);
+  padding: 8px 20px;
+  border-radius: 6px;
   display: block;
   font-weight: 500;
-  transition: var(--transition);
+  font-size: 14px;
+  transition: all 0.3s ease;
   white-space: nowrap;
+  border: 1px solid transparent;
 }
 
 .nav-links li a:hover {
   background: var(--primary-purple);
   color: white;
+  border-color: var(--primary-purple);
 }
 
 .nav-links li a.admin-link {
   background: var(--primary-orange);
   color: white;
+  border-color: var(--primary-orange);
 }
 
 .nav-links li a.admin-link:hover {
-  background: var(--primary-purple);
+  background: #e68a00;
+  border-color: #e68a00;
 }
 
-/* Logout button in the nav should look like the nav links */
-.nav-logout {
-  background: none;
-  border: none;
-  color: var(--text-dark);
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--border-radius);
-  font-weight: 500;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.nav-logout:hover {
-  background: var(--primary-purple);
-  color: white;
-}
-
-/* Some places use logout-btn class for header actions; keep it consistent */
-.logout-btn {
-  background: none;
-  border: none;
-  color: var(--text-dark);
-  font-weight: 500;
-  cursor: pointer;
-  padding: 8px;
-}
-
+/* ===== RESPONSIVE DESIGN ===== */
 @media (max-width: 992px) {
+  .header-content {
+    gap: 16px;
+  }
+
   .search-bar {
     max-width: 400px;
   }
 
-  .nav-links {
-    flex-wrap: wrap;
+  .auth-buttons {
+    gap: 8px;
+  }
+
+  .btn-login,
+  .btn-signup {
+    padding: 6px 12px;
+    font-size: 12px;
   }
 }
 
 @media (max-width: 768px) {
+  .header-promo {
+    display: none;
+  }
+
+  .header-top {
+    padding: 12px 0;
+  }
+
   .header-content {
-    gap: var(--spacing-sm);
+    gap: 12px;
+  }
+
+  .logo {
+    font-size: 24px;
   }
 
   .search-bar {
     order: 3;
     flex-basis: 100%;
     max-width: 100%;
-    margin-top: var(--spacing-sm);
+    margin-top: 12px;
   }
 
   .mobile-menu-toggle {
     display: flex;
   }
 
+  .account-section {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .auth-buttons {
+    width: 100%;
+    gap: 8px;
+  }
+
+  .btn-login,
+  .btn-signup {
+    flex: 1;
+    padding: 8px 12px;
+    font-size: 12px;
+    text-align: center;
+  }
+
+  /* Navigation Drawer */
   .nav {
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
+    border-bottom: none;
   }
 
   .nav.nav-open {
     max-height: 500px;
+    border-bottom: 1px solid var(--border-color);
   }
 
   .nav-links {
     flex-direction: column;
     gap: 0;
+    padding: 8px 0;
   }
 
   .nav-links li a {
     border-radius: 0;
+    padding: 12px var(--spacing-md);
+    border: none;
   }
 
-  .header-link {
-    display: none;
+  .nav-links li a:hover {
+    background: #f5f5f5;
+    color: var(--primary-orange);
   }
 }
 
 @media (max-width: 480px) {
-  .logo {
-    font-size: 24px;
+  .header-content {
+    flex-wrap: wrap;
   }
 
-  .header-top {
-    padding: var(--spacing-sm) 0;
+  .logo {
+    font-size: 20px;
+  }
+
+  .search-bar input {
+    padding: 10px 40px 10px 12px;
+    font-size: 13px;
+  }
+
+  .header-actions {
+    gap: 12px;
+  }
+
+  .cart-button svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .btn-login,
+  .btn-signup {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  .user-button {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+
+  .user-button span {
+    display: none;
   }
 }
+

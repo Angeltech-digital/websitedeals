@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import { authAPI, setTokens } from '../services/api';
 import Header from '../components/Header';
 import '../styles/Auth.css';
@@ -20,7 +21,7 @@ function RegisterPage() {
     if (e && e.preventDefault) e.preventDefault();
 
     if (formData.password !== formData.confirmPassword) {
-      alert('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
 
@@ -40,12 +41,30 @@ function RegisterPage() {
       // register view returns user data + access & refresh tokens
       const { access, refresh } = response.data;
       setTokens({ access, refresh });
-      navigate('/');
+      toast.success('Account created successfully! Redirecting...');
+      setTimeout(() => navigate('/'), 1500);
     } catch (err) {
       console.error('Register error response:', err.response?.data || err);
-      setServerErrors(err.response?.data || { detail: err.message });
-      // Keep the legacy alert too for visibility during dev
-      alert(err.response?.data || err.message || 'Failed to register');
+      const errorData = err.response?.data || { detail: err.message };
+      
+      // Transform error messages to handle both string and array formats
+      const transformedErrors = {};
+      for (const [key, value] of Object.entries(errorData)) {
+        if (Array.isArray(value)) {
+          transformedErrors[key] = value;
+        } else if (typeof value === 'string') {
+          transformedErrors[key] = [value];
+        } else {
+          transformedErrors[key] = [String(value)];
+        }
+      }
+      
+      setServerErrors(transformedErrors);
+      
+      // Show error toast
+      const firstError = Object.values(transformedErrors)[0];
+      const errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
+      toast.error(errorMessage || 'Failed to register');
     } finally {
       setIsLoading(false);
     }

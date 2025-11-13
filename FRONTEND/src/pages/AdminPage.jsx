@@ -1,13 +1,16 @@
 import { useState, useEffect } from 'react';
-import { usersAPI } from '../services/api';
+import { useNavigate, Link } from 'react-router-dom';
+import { usersAPI, getUser, getAccessToken } from '../services/api';
 import '../styles/Admin.css';
 
 function AdminPage() {
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('products');
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   const [productForm, setProductForm] = useState({
     name: '',
@@ -18,10 +21,35 @@ function AdminPage() {
   });
 
   useEffect(() => {
-    if (activeTab === 'users') {
+    // Check if user is authenticated and is admin
+    const checkAuth = () => {
+      const token = getAccessToken();
+      const user = getUser();
+      
+      if (!token) {
+        // Not authenticated, redirect to login
+        navigate('/login');
+        return;
+      }
+      
+      // Check if user is admin (is_staff or role is ADMIN)
+      if (user?.is_staff || user?.role === 'ADMIN') {
+        setIsAuthorized(true);
+      } else {
+        // Not authorized, redirect to home
+        console.warn('User is not admin, redirecting to home');
+        navigate('/');
+      }
+    };
+    
+    checkAuth();
+  }, [navigate]);
+
+  useEffect(() => {
+    if (activeTab === 'users' && isAuthorized) {
       fetchUsers();
     }
-  }, [activeTab]);
+  }, [activeTab, isAuthorized]);
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -36,6 +64,16 @@ function AdminPage() {
       setLoading(false);
     }
   };
+
+  if (!isAuthorized) {
+    return (
+      <div className="admin-page">
+        <div className="admin-loading">
+          <p>Checking authorization...</p>
+        </div>
+      </div>
+    );
+  }
 
   const handleProductSubmit = (e) => {
     e.preventDefault();
@@ -96,6 +134,13 @@ function AdminPage() {
             </svg>
             Users
           </button>
+          <Link to="/" className="view-site-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+            View Site
+          </Link>
         </nav>
       </div>
 

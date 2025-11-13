@@ -64,6 +64,30 @@
   color: white;
 }
 
+.view-site-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid var(--primary-orange);
+  border-radius: var(--border-radius);
+  color: var(--primary-orange);
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: var(--spacing-lg);
+  text-align: center;
+  justify-content: center;
+}
+
+.view-site-btn:hover {
+  background: var(--primary-orange);
+  color: white;
+}
+
 .admin-main {
   flex: 1;
   margin-left: 280px;
