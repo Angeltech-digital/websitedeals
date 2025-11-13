@@ -1,22 +1,51 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { authAPI, setTokens } from '../services/api';
+import Header from '../components/Header';
 import '../styles/Auth.css';
 
 function RegisterPage() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
+    username: '',
     email: '',
     password: '',
     confirmPassword: ''
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const [serverErrors, setServerErrors] = useState(null);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e) => {
+    if (isLoading) return;
+    if (e && e.preventDefault) e.preventDefault();
+
     if (formData.password !== formData.confirmPassword) {
       alert('Passwords do not match');
       return;
     }
-    console.log('Register:', formData);
+
+    setIsLoading(true);
+    try {
+      const payload = {
+        username: formData.username || formData.email.split('@')[0],
+        email: formData.email,
+        password: formData.password,
+        password_confirm: formData.confirmPassword,
+      };
+
+      const response = await authAPI.register(payload);
+      // register view returns user data + access & refresh tokens
+      const { access, refresh } = response.data;
+      setTokens({ access, refresh });
+      navigate('/');
+    } catch (err) {
+      console.error('Register error response:', err.response?.data || err);
+      setServerErrors(err.response?.data || { detail: err.message });
+      // Keep the legacy alert too for visibility during dev
+      alert(err.response?.data || err.message || 'Failed to register');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -27,79 +56,102 @@ function RegisterPage() {
   };
 
   return (
-    <div className="auth-page">
-      <div className="auth-container">
-        <div className="auth-card">
-          <h1 className="auth-title">Create Account</h1>
-          <p className="auth-subtitle">Join DealsDuka today</p>
+    <>
+      <Header cartCount={0} onCartClick={() => {}} />
+      <div className="auth-page">
+        <div className="auth-container">
+          <div className="auth-card">
+            <h1 className="auth-title">Create Account</h1>
+            <p className="auth-subtitle">Join DealsDuka today</p>
 
-          <form onSubmit={handleSubmit} className="auth-form">
-            <div className="form-group">
-              <label htmlFor="name">Full Name</label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                required
-                placeholder="John Doe"
-              />
-            </div>
+            <form onSubmit={handleSubmit} className="auth-form">
+              <div className="form-group">
+                <label htmlFor="username">Full Name</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  required
+                  placeholder="John Doe"
+                />
+                {serverErrors?.username && (
+                  <div className="field-error">{serverErrors.username.join(' ')}</div>
+                )}
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="email">Email Address</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                placeholder="your@email.com"
-              />
-            </div>
+              <div className="form-group">
+                <label htmlFor="email">Email Address</label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="your@email.com"
+                />
+                {serverErrors?.email && (
+                  <div className="field-error">{serverErrors.email.join(' ')}</div>
+                )}
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                placeholder="••••••••"
-              />
-            </div>
+              <div className="form-group">
+                <label htmlFor="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  placeholder="••••••••"
+                />
+                {serverErrors?.password && (
+                  <div className="field-error">{serverErrors.password.join(' ')}</div>
+                )}
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-                placeholder="••••••••"
-              />
-            </div>
+              <div className="form-group">
+                <label htmlFor="confirmPassword">Confirm Password</label>
+                <input
+                  type="password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  required
+                  placeholder="••••••••"
+                />
+              </div>
 
-            <label className="checkbox-label">
-              <input type="checkbox" required />
-              <span>I agree to the Terms and Conditions</span>
-            </label>
+              <label className="checkbox-label">
+                <input type="checkbox" required />
+                <span>I agree to the Terms and Conditions</span>
+              </label>
 
-            <button type="submit" className="submit-btn">Create Account</button>
-          </form>
+              {serverErrors?.detail && (
+                <div className="auth-error" role="alert">{serverErrors.detail}</div>
+              )}
 
-          <p className="auth-switch">
-            Already have an account? <Link to="/login">Sign in</Link>
-          </p>
+              <button
+                type="submit"
+                className="submit-btn"
+                onClick={handleSubmit}
+                disabled={isLoading}
+              >
+                {isLoading ? 'Creating account...' : 'Create Account'}
+              </button>
+            </form>
+
+            <p className="auth-switch">
+              Already have an account? <Link to="/login">Sign in</Link>
+            </p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
 

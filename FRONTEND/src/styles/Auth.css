@@ -9,6 +9,13 @@
   padding: var(--spacing-lg);
 }
 
+/* if header is sticky, add a top offset on small screens so content is visible */
+@media (max-width: 768px) {
+  .auth-page {
+    padding-top: calc(var(--spacing-2xl) + 60px);
+  }
+}
+
 .auth-container {
   width: 100%;
   max-width: 480px;

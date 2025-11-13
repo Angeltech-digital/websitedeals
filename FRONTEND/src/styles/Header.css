@@ -186,6 +186,33 @@
   background: var(--primary-purple);
 }
 
+/* Logout button in the nav should look like the nav links */
+.nav-logout {
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.nav-logout:hover {
+  background: var(--primary-purple);
+  color: white;
+}
+
+/* Some places use logout-btn class for header actions; keep it consistent */
+.logout-btn {
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px;
+}
+
 @media (max-width: 992px) {
   .search-bar {
     max-width: 400px;
