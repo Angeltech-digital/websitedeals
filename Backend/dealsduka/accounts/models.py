@@ -18,6 +18,13 @@ class User(AbstractUser):
     address = models.TextField(blank=True)
     bio = models.TextField(blank=True)
     profile_picture = models.ImageField(upload_to='profile_pictures/', blank=True, null=True)
+
+    class Meta:
+        verbose_name = _('user')
+        verbose_name_plural = _('users')
+        constraints = [
+            models.UniqueConstraint(fields=['email'], name='unique_email')
+        ]
     
     class Meta:
         verbose_name = _('user')

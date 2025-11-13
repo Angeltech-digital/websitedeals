@@ -21,6 +21,7 @@ class UserSerializer(serializers.ModelSerializer):
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     password_confirm = serializers.CharField(write_only=True)
+    username = serializers.CharField(required=False, allow_blank=True)
 
     class Meta:
         model = User
@@ -33,9 +34,14 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         validated_data.pop('password_confirm', None)
+        username = validated_data.get('username')
+        email = validated_data.get('email')
+        if not username:
+            # Use email as username if not provided
+            username = email
         user = User.objects.create_user(
-            username=validated_data.get('username'),
-            email=validated_data.get('email'),
+            username=username,
+            email=email,
             password=validated_data.get('password'),
             phone_number=validated_data.get('phone_number', ''),
             address=validated_data.get('address', '')

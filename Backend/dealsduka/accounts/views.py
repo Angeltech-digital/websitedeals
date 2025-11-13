@@ -70,12 +70,10 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         # If the username looks like an email, try to resolve to a username
         if username and '@' in username:
-            try:
-                user = User.objects.get(email=username)
+            user = User.objects.filter(email=username).first()
+            if user:
                 attrs['username'] = user.username
-            except User.DoesNotExist:
-                # leave username as-is; authentication will fail below
-                pass
+            # If no user found, leave username as-is; authentication will fail below
 
         return super().validate(attrs)
 
