@@ -1,9 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { usersAPI } from '../services/api';
 import '../styles/Admin.css';
 
 function AdminPage() {
   const [activeTab, setActiveTab] = useState('products');
   const [showAddProduct, setShowAddProduct] = useState(false);
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const [productForm, setProductForm] = useState({
     name: '',
@@ -12,6 +16,26 @@ function AdminPage() {
     description: '',
     image: ''
   });
+
+  useEffect(() => {
+    if (activeTab === 'users') {
+      fetchUsers();
+    }
+  }, [activeTab]);
+
+  const fetchUsers = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await usersAPI.getAllUsers();
+      setUsers(response.data);
+    } catch (err) {
+      console.error('Error fetching users:', err);
+      setError('Failed to load users');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleProductSubmit = (e) => {
     e.preventDefault();
@@ -190,6 +214,11 @@ function AdminPage() {
 
           {activeTab === 'users' && (
             <div className="admin-table-container">
+              {error && (
+                <div className="error-message" style={{color: 'red', padding: '10px'}}>
+                  {error}
+                </div>
+              )}
               <table className="admin-table">
                 <thead>
                   <tr>
@@ -201,11 +230,32 @@ function AdminPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td colSpan="5" style={{textAlign: 'center', padding: '40px'}}>
-                      No users yet.
-                    </td>
-                  </tr>
+                  {loading ? (
+                    <tr>
+                      <td colSpan="5" style={{textAlign: 'center', padding: '40px'}}>
+                        Loading users...
+                      </td>
+                    </tr>
+                  ) : users.length === 0 ? (
+                    <tr>
+                      <td colSpan="5" style={{textAlign: 'center', padding: '40px'}}>
+                        No users yet.
+                      </td>
+                    </tr>
+                  ) : (
+                    users.map(user => (
+                      <tr key={user.id}>
+                        <td>{user.username}</td>
+                        <td>{user.email}</td>
+                        <td>{user.role}</td>
+                        <td>{new Date(user.date_joined).toLocaleDateString()}</td>
+                        <td>
+                          <button className="action-btn edit-btn">Edit</button>
+                          <button className="action-btn delete-btn">Delete</button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

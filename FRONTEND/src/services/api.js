@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 // Token keys in localStorage
 const ACCESS_KEY = 'access_token';
@@ -79,6 +79,14 @@ export const productsAPI = {
   createProduct: (productData) => api.post('/api/products/', productData),
   updateProduct: (id, productData) => api.put(`/api/products/${id}/`, productData),
   deleteProduct: (id) => api.delete(`/api/products/${id}/`),
+};
+
+export const usersAPI = {
+  getAllUsers: () => api.get('/api/users/'),
+  getUser: (id) => api.get(`/api/users/${id}/`),
+  createUser: (userData) => api.post('/api/users/', userData),
+  updateUser: (id, userData) => api.put(`/api/users/${id}/`, userData),
+  deleteUser: (id) => api.delete(`/api/users/${id}/`),
 };
 
 export default api;

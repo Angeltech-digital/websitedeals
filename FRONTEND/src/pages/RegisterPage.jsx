@@ -27,11 +27,14 @@ function RegisterPage() {
     setIsLoading(true);
     try {
       const payload = {
-        username: formData.username || formData.email.split('@')[0],
         email: formData.email,
         password: formData.password,
         password_confirm: formData.confirmPassword,
       };
+      // Only include username if provided and not empty
+      if (formData.username && formData.username.trim()) {
+        payload.username = formData.username.trim();
+      }
 
       const response = await authAPI.register(payload);
       // register view returns user data + access & refresh tokens
